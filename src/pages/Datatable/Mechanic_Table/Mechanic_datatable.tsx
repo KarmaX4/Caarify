@@ -9,6 +9,7 @@ import { Edit } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useRouter } from 'next/router'
 // import ConfirmNotification from './comfirmModal'
 import {
   Dialog,
@@ -37,7 +38,7 @@ function Mechanic_Datatable() {
 
 
 
-  
+  const router = useRouter()
   const columns = [{
     label: 'Id', name: '_id',
     options: { "display": false, }
@@ -103,7 +104,7 @@ function Mechanic_Datatable() {
   const fetchRequestData = async () => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token')
-
+      // const router = useRouter()
       interface Headers {
         [key: string]: string
       }
@@ -115,10 +116,10 @@ function Mechanic_Datatable() {
         } as Headers
       })
       if (response.status !== 200) {
-        // router.push('/pages/login/')
+        router.push('/pages/login/')
       }
       const data = await response.json()
-      const sdata = data.mechanicsDetails
+      const sdata = data.data.mechanicsDetails
       setMData(sdata)
     }
   }
@@ -153,15 +154,17 @@ function Mechanic_Datatable() {
 
     }
   }
-
-  
-
+  interface options {
+    [key: string]: any
+  }
   return (
     <CacheProvider value={muiCache}>
       <ConfirmNotification/>
       <ToastContainer/>
       <ThemeProvider theme={createTheme()}>
-        <MUIDataTable title={'Mechanic Details'} data={mData} columns={columns} />
+        <MUIDataTable title={'Mechanic Details'} data={mData} columns={columns} options ={{
+    selectableRows: false 
+  }as options}/>
       </ThemeProvider>
     </CacheProvider>
   )

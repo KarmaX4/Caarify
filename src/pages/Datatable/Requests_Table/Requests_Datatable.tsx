@@ -57,14 +57,19 @@ function Requests_Datatable() {
         router.push('/pages/login/')
       }
       const data = await response.json()
-      sdata = data.serviceDetails
+      sdata = data.data.serviceDetails
       setnFData(sdata)
     }
+  }
+  interface options {
+    [key: string]: any
   }
   return (
     <CacheProvider value={muiCache}>
       {/* <ThemeProvider theme={createTheme()}> */}
-      <MUIDataTable title={'Sevice Rquests'} data={fData} columns={columns} />
+      <MUIDataTable title={'Sevice Rquests'} data={fData} columns={columns} options ={{
+    selectableRows: false 
+  }as options} />
       {/* </ThemeProvider> */}
     </CacheProvider>
   )

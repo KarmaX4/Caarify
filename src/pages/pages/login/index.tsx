@@ -147,7 +147,7 @@ const LoginPage = () => {
       body: JSON.stringify(loginUser)
     })
     const data = await response.json()
-    const token = data.token
+    const token = data.data.token
     // localStorage.setItem('token', token)
     if (response.status === 200) {
       toast.success('Successfully Logged IN!', {
