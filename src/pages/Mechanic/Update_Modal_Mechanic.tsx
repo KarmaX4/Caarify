@@ -21,6 +21,7 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 import { Close } from 'mdi-material-ui'
 import { Car3Plus, FormTextboxPassword } from 'mdi-material-ui'
 import { useEffect, useState } from 'react'
+import { log } from 'console'
 
 const Update_Modal_Mechanic = (props: any) => {
   const [nameError, setNameError] = useState('')
@@ -32,8 +33,17 @@ const Update_Modal_Mechanic = (props: any) => {
   const [email, setEmail] = useState()
   const [phone, setPhone] = useState()
   const [services, setServices] = useState()
+  const [mData, setMData] = useState([])
+  const [mname, setmname] = useState()
+  const [mphone, setmphone] = useState()
+  const [mservice, setmservice] = useState()
 
-const router = useRouter();
+
+  useEffect(() => {
+    fetchRequestData()
+  }, [])
+
+  const router = useRouter();
 
   const nameHandler = (e: any) => {
     setName(e.target.value)
@@ -44,17 +54,17 @@ const router = useRouter();
       return true
     }
   }
-  const emailHandler = (e: any) => {
-    setEmail(e.target.value)
-    if (e.target.value === '') {
-      setEmailError("Can't be empty")
-    } else if (!e.target.value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i)) {
-      setEmailError('not a valid email address')
-    } else {
-      setEmailError('')
-      return true
-    }
-  }
+  // const emailHandler = (e: any) => {
+  //   setEmail(e.target.value)
+  //   if (e.target.value === '') {
+  //     setEmailError("Can't be empty")
+  //   } else if (!e.target.value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i)) {
+  //     setEmailError('not a valid email address')
+  //   } else {
+  //     setEmailError('')
+  //     return true
+  //   }
+  // }
   const phoneHandler = (e: any) => {
     setPhone(e.target.value)
     if (e.target.value === '') {
@@ -77,23 +87,60 @@ const router = useRouter();
     }
   }
 
-  const addMech = {
-    mechanicName: name, // More then 2 Alpha
-    email: email,
-    phone: phone, // Start with 6,7,8,9 and 10 Only
+  //=============================input field api========================================
+  const fetchRequestData = async () => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token')
+      // const router = useRouter()
+      interface Headers {
+        [key: string]: string
+      }
+      // console.log(token)
+      const response = await fetch('https://caarify-abhi.onrender.com/api/admin/get-mechanic', {
+        method: 'GET',
+        headers: {
+          Authorization: token
+        } as Headers
+      })
+      if (response.status !== 200) {
+        router.push('/pages/login/')
+      }
+      const data = await response.json()
+      const sdata = data.data
+      const fdata = sdata.mechanicsDetails
+      setMData(fdata)
+
+      const mid = localStorage.getItem('id')
+      const filteredResult = fdata.find((e: any) => e._id == mid);
+      const mname = filteredResult.mechanicName
+      const mphone = filteredResult.phone
+      const mservice = filteredResult.service
+      setmservice(mservice)
+      setmphone(mphone)
+      setmname(mname)
+      setMData(filteredResult)
+    }
+  }
+
+
+  //----------------------------------update Api------------------------------------------
+  const mid = localStorage.getItem('id')
+  const upadteMech = {
+    formName: "mechanic",
+    id: mid,
+    mechanicName: name,
+    phone: phone,
     service: services
   }
-  
-  
   const sumbitHandler = async (e: any) => {
     e.preventDefault()
     const token = localStorage.getItem('token')
     interface Headers {
       [key: string]: string
     }
-    const response = await fetch('https://caarify-abhi.onrender.com/api/admin/add-mechanic', {
+    const response = await fetch('https://caarify-abhi.onrender.com/api/admin/update', {
       method: 'POST',
-      body: JSON.stringify(addMech),
+      body: JSON.stringify(upadteMech),
       headers: {
         Accept: 'application/json',
         'content-type': 'application/json',
@@ -104,7 +151,7 @@ const router = useRouter();
     const response_data = await response.json()
     console.log(response_data)
     if (response.status === 200) {
-      toast.success('Registered Sucessfully!', {
+      toast.success('Updated Sucessfully!', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -128,7 +175,7 @@ const router = useRouter();
       })
     }
   }
-console.log(name,email,phone,services)
+  // console.log(name, email, phone, services)
 
   //custom Css to hide num wheel
   const useStyles = makeStyles({
@@ -149,7 +196,7 @@ console.log(name,email,phone,services)
 
   const classes = useStyles()
   return (
-  
+
     <Card>
       <CardHeader title='UPDATE MECHANIC' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
@@ -164,30 +211,11 @@ console.log(name,email,phone,services)
                 helperText={nameError}
                 value={name}
                 label='Full Name'
-                placeholder='Leonard Carter'
+                placeholder={mname}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
                       <AccountOutline />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                error={emailError == '' ? false : true}
-                onChange={emailHandler}
-                type='email'
-                label='Email'
-                value={email}
-                placeholder='carterleonard@gmail.com'
-                helperText={emailError}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position='start'>
-                      <EmailOutline />
                     </InputAdornment>
                   )
                 }}
@@ -205,7 +233,8 @@ console.log(name,email,phone,services)
                   e.target.blur()
                 }}
                 label='Phone No.'
-                placeholder='+1-123-456-8790'
+                value={phone}
+                placeholder={mphone}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
@@ -224,7 +253,7 @@ console.log(name,email,phone,services)
                 type='number'
                 value={services}
                 label='services'
-                placeholder='Services'
+                placeholder={mservice}
                 sx={{ '& .MuiOutlinedInput-root': { alignItems: 'baseline' } }}
                 InputProps={{
                   inputProps: { min: 0 },
@@ -237,9 +266,9 @@ console.log(name,email,phone,services)
               />
             </Grid>
             <Grid item xs={12} display='flex' justifyContent='space-between'>
-                  <Button type='submit' variant='contained' size='large' color='error' onClick={props.onClose}>
-                    Close
-                  </Button>
+              <Button type='submit' variant='contained' size='large' color='error' onClick={props.onClose}>
+                Close
+              </Button>
               <Button
                 sx={{
                   '&:hover': {
@@ -251,7 +280,7 @@ console.log(name,email,phone,services)
                 onClick={sumbitHandler}
                 disabled={!(!nameError && !emailError && !phoneError && !servicesError)}
                 size='large'
-              > 
+              >
                 Update
                 {/* {console.log(isValid)} */}
               </Button>

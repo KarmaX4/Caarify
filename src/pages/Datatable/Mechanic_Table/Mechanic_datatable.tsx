@@ -34,11 +34,13 @@ const muiCache = createCache({
 
 function Mechanic_Datatable() {
   const [mData, setMData] = useState([])
-  const [dData, setdData] = useState()
+  const [dData, setdData] = useState<any>()
   const [isOpen, setIsOpen] = useState(false);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  
 
 
   useEffect(() => {
@@ -47,41 +49,34 @@ function Mechanic_Datatable() {
 
   const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
     [theme.breakpoints.down('sm')]: {
-        width: '100%',
-        textAlign: 'center'
+      width: '100%',
+      textAlign: 'center'
     }
-}))
+  }))
 
-const Update_Mechanic = () => {
-    // const [open, setOpen] = React.useState(false);
-    // const handleOpen = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
-
+  const Update_Mechanic = () => {
     return (
-        <div>
-            {/* <Button  component='label' variant='contained' onClick={handleOpen()}>
-                + New Mechanic
-            </Button> */}
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <DatePickerWrapper>
-                    <Grid container spacing={6}
-                        mt={10}
-                        alignItems="center"
-                        justifyContent="center">
-                        <Grid item xs={6} md={6}>
-                            <Update_Modal_Mechanic onClose={handleClose} />
-                        </Grid>
-                    </Grid>
-                </DatePickerWrapper>
-            </Modal>
-        </div>
+      <div>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <DatePickerWrapper>
+            <Grid container spacing={6}
+              mt={10}
+              alignItems="center"
+              justifyContent="center">
+              <Grid item xs={6} md={6}>
+                <Update_Modal_Mechanic onClose={handleClose} />
+              </Grid>
+            </Grid>
+          </DatePickerWrapper>
+        </Modal>
+      </div>
     );
-}
+  }
 
 
   // --------------------TABLE HEADER -------------------------------------------------------------------
@@ -93,7 +88,7 @@ const Update_Mechanic = () => {
     label: 'Id', name: '_id',
     options: { "display": false, }
   },
-  { label: 'Mechanic Name', name: 'mechanicName'},
+  { label: 'Mechanic Name', name: 'mechanicName', align: "rights" },
   { label: 'E-Mail', name: 'email' },
   { label: 'Phone Number ', name: 'phone' },
   { label: 'Services', name: 'service' },
@@ -108,11 +103,11 @@ const Update_Mechanic = () => {
         return (
           <>
             <IconButton aria-label="edit" color='primary'
-              onClick={() => { setdData(tableMeta.rowData[0]),handleOpen()}}>
+              onClick={() => { localStorage.setItem("id",tableMeta.rowData[0]), handleOpen(); }}>
               <Edit />
             </IconButton>
             <IconButton aria-label="delete" color='error'
-              onClick={() => { setdData(tableMeta.rowData[0]),setIsOpen(true) }}>
+              onClick={() => { setdData(tableMeta.rowData[0]), setIsOpen(true) }}>
               <DeleteIcon />
             </IconButton>
           </>
@@ -139,7 +134,7 @@ const Update_Mechanic = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={()=>{setIsOpen(false)}}>No</Button>
+          <Button variant="contained" onClick={() => { setIsOpen(false) }}>No</Button>
           <Button variant="contained" color="error" onClick={deleteMech} >
             Yes
           </Button>
@@ -169,8 +164,12 @@ const Update_Mechanic = () => {
         router.push('/pages/login/')
       }
       const data = await response.json()
-      const sdata = data.data.mechanicsDetails
-      setMData(sdata)
+      const sdata = data.data
+      const fdata = sdata.mechanicsDetails
+      setMData(fdata)
+      // console.log(mData);
+      
+      // const filteredResult = mData.find((e:any) => e._id == 6);
     }
   }
 
@@ -196,7 +195,7 @@ const Update_Mechanic = () => {
       } as Headers,
       body: JSON.stringify(deletedata)
     })
-    
+
     if (response.status === 200) {
       toast.success('Successfully Deleted')
       setIsOpen(false)
@@ -209,13 +208,13 @@ const Update_Mechanic = () => {
   }
   return (
     <CacheProvider value={muiCache}>
-      <Update_Mechanic/>
-      <ConfirmNotification/>
-      <ToastContainer/>
+      <Update_Mechanic />
+      <ConfirmNotification />
+      <ToastContainer />
       {/* <ThemeProvider theme={createTheme()}> */}
-        <MUIDataTable title={'Mechanic Details'} data={mData} columns={columns} options ={{
-    selectableRows: false 
-  }as options}/>
+      <MUIDataTable title={'Mechanic Details'} data={mData} columns={columns} options={{
+        selectableRows: false
+      } as options} />
       {/* </ThemeProvider> */}
     </CacheProvider>
   )

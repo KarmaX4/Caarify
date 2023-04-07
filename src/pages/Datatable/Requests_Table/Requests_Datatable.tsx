@@ -57,8 +57,9 @@ function Requests_Datatable() {
         router.push('/pages/login/')
       }
       const data = await response.json()
-      sdata = data.data.serviceDetails
-      setnFData(sdata)
+      sdata = data.data
+      const pdata= sdata.serviceDetails
+      setnFData(pdata)
     }
   }
   interface options {
