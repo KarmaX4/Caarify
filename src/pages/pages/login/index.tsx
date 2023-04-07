@@ -80,10 +80,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 
 const LoginPage = () => {
   // ** State
-  const [values, setValues] = useState<State>({
-    password: '',
-    showPassword: false
-  })
+  const [values, setValues] = useState<any>(false)
   // state for input username and password
   const [enteredUname, setEnteredUname] = useState<string>('')
   const [enteredPassword, setEnteredPassword] = useState<string>('')
@@ -96,24 +93,13 @@ const LoginPage = () => {
   // credentials for login
   const credential = [
     { uname: 'React@tms.com', pass: '12345' },
-    { uname: 'sutharj123@gmail.com', pass: '4545' }
   ]
 
   // ** Hook
   const theme = useTheme()
   const router = useRouter()
 
-  // const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
-  //   setValues({ ...values, [prop]: event.target.value })
-  // }
 
-  // const handleClickShowPassword = () => {
-  //   setValues({ ...values,  showPassword: !values.showPassword })
-  // }
-
-  // const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
-  //   event.preventDefault()
-  // }
   const UnameChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.trim().length > 0) {
       setIsValid(true)
@@ -143,12 +129,12 @@ const LoginPage = () => {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json'
-      }, 
+      },
       body: JSON.stringify(loginUser)
     })
     const data = await response.json()
     const token = data.data.token
-    // localStorage.setItem('token', token)
+
     if (response.status === 200) {
       toast.success('Successfully Logged IN!', {
         position: 'top-right',
@@ -181,11 +167,11 @@ const LoginPage = () => {
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
           <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            
+
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
-                      Welcome to <img style={{marginBottom:"-7px"}} height="29px" width= '27px' alt='icon' src='/images/favicon.png'></img>Caarify! 👋🏻
+          <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
+             Welcome to <img style={{ marginBottom: "-7px" }} height="29px" width='29px' alt='icon' src='/images/favicon.png'></img>aarify!
             </Typography>
             <Typography variant='body2'>Please sign-in to your account.</Typography>
           </Box>
@@ -207,14 +193,13 @@ const LoginPage = () => {
                 value={inputPassword}
                 id='auth-login-password'
                 onChange={PassChangeHandler}
-                type='password'
+                type={values === true ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position='end'>
                     <IconButton
                       edge='end'
-                      // onClick={handleClickShowPassword}
-                      // onMouseDown={handleMouseDownPassword}
                       aria-label='toggle password visibility'
+                      onClick={() => { if (values == true) { setValues(false) } else { setValues(true) } }}
                     >
                       {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
                     </IconButton>
@@ -222,7 +207,6 @@ const LoginPage = () => {
                   </InputAdornment>
                 }
               />
-              {/* {!isValid ? <span>Invalid Username or Password</span> : ''} */}
             </FormControl>
             {/* <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
@@ -238,7 +222,7 @@ const LoginPage = () => {
               size='large'
               variant='contained'
               sx={{ marginBottom: 5, marginTop: 7 }}
-              // onClick={() => router.push('/')}
+            // onClick={() => router.push('/')}
             >
               Login
             </Button>

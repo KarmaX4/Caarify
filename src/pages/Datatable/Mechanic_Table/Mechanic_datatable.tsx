@@ -11,6 +11,13 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useRouter } from 'next/router'
 // import ConfirmNotification from './comfirmModal'
+import { ElementType } from 'react'
+import { ButtonProps } from '@mui/material/Button'
+import Modal from '@mui/material/Modal';
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker';
+import Update_Modal_Mechanic from 'src/pages/Mechanic/Update_Modal_Mechanic'
+import Grid from '@mui/material/Grid'
+import { styled } from '@mui/material/styles'
 import {
   Dialog,
   DialogActions,
@@ -29,10 +36,53 @@ function Mechanic_Datatable() {
   const [mData, setMData] = useState([])
   const [dData, setdData] = useState()
   const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
 
   useEffect(() => {
     fetchRequestData()
   }, [])
+
+  const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
+    [theme.breakpoints.down('sm')]: {
+        width: '100%',
+        textAlign: 'center'
+    }
+}))
+
+const Update_Mechanic = () => {
+    // const [open, setOpen] = React.useState(false);
+    // const handleOpen = () => setOpen(true);
+    // const handleClose = () => setOpen(false);
+
+    return (
+        <div>
+            {/* <Button  component='label' variant='contained' onClick={handleOpen()}>
+                + New Mechanic
+            </Button> */}
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <DatePickerWrapper>
+                    <Grid container spacing={6}
+                        mt={10}
+                        alignItems="center"
+                        justifyContent="center">
+                        <Grid item xs={6} md={6}>
+                            <Update_Modal_Mechanic onClose={handleClose} />
+                        </Grid>
+                    </Grid>
+                </DatePickerWrapper>
+            </Modal>
+        </div>
+    );
+}
+
 
   // --------------------TABLE HEADER -------------------------------------------------------------------
 
@@ -43,7 +93,7 @@ function Mechanic_Datatable() {
     label: 'Id', name: '_id',
     options: { "display": false, }
   },
-  { label: 'Mechanic Name', name: 'mechanicName' },
+  { label: 'Mechanic Name', name: 'mechanicName'},
   { label: 'E-Mail', name: 'email' },
   { label: 'Phone Number ', name: 'phone' },
   { label: 'Services', name: 'service' },
@@ -57,8 +107,8 @@ function Mechanic_Datatable() {
       customBodyRender: (value: any, tableMeta: any, updateValue: any) => {
         return (
           <>
-            <IconButton aria-label="edit" color='secondary'
-              onClick={() => { setdData(tableMeta.rowData[0]) }}>
+            <IconButton aria-label="edit" color='primary'
+              onClick={() => { setdData(tableMeta.rowData[0]),handleOpen()}}>
               <Edit />
             </IconButton>
             <IconButton aria-label="delete" color='error'
@@ -159,13 +209,14 @@ function Mechanic_Datatable() {
   }
   return (
     <CacheProvider value={muiCache}>
+      <Update_Mechanic/>
       <ConfirmNotification/>
       <ToastContainer/>
-      <ThemeProvider theme={createTheme()}>
+      {/* <ThemeProvider theme={createTheme()}> */}
         <MUIDataTable title={'Mechanic Details'} data={mData} columns={columns} options ={{
     selectableRows: false 
   }as options}/>
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </CacheProvider>
   )
 }

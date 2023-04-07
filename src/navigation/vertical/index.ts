@@ -71,8 +71,8 @@ const navigation = (): VerticalNavItemsType => {
     // },
     {
       icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
+      title: 'Service Request',
+      path: '/Service-Request'
     },
     // {
     //   icon: Table,
